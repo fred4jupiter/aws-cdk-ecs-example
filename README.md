@@ -1,4 +1,4 @@
-#aws-cdk-ecs-example
+# aws-cdk-ecs-example
 
 This is an example project for using AWS CDK creating an ECS cluster.
 
