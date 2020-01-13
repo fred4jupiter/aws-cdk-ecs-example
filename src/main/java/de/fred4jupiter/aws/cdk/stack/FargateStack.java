@@ -1,6 +1,7 @@
 package de.fred4jupiter.aws.cdk.stack;
 
 import software.amazon.awscdk.core.Construct;
+import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.Vpc;
@@ -12,16 +13,12 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskI
 public class FargateStack extends Stack {
 
     public FargateStack(Construct scope, String id) {
-        super(scope, id);
+        this(scope, id, null);
     }
 
     public FargateStack(Construct scope, String id, StackProps props) {
         super(scope, id, props);
 
-        createStackWithFargate();
-    }
-
-    private void createStackWithFargate() {
         // Default is all AZs in region
         Vpc vpc = Vpc.Builder.create(this, "FargateVpc").maxAzs(2).build();
 
@@ -39,6 +36,7 @@ public class FargateStack extends Stack {
                 .taskImageOptions(taskImageOptions)
                 .memoryLimitMiB(1024)       // Default is 512
                 .publicLoadBalancer(true)   // Default is false
+                .healthCheckGracePeriod(Duration.seconds(60)) // spring boot needs some time to startup
                 .build();
     }
 }
