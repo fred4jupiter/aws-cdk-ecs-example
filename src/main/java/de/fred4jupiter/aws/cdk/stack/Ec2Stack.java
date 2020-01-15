@@ -1,6 +1,7 @@
 package de.fred4jupiter.aws.cdk.stack;
 
 import software.amazon.awscdk.core.Construct;
+import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.InstanceType;
@@ -48,6 +49,7 @@ public class Ec2Stack extends Stack {
                 .taskImageOptions(taskImageOptions)
                 .memoryLimitMiB(1024)       // Default is 512
                 .publicLoadBalancer(true)   // Default is false
+                .healthCheckGracePeriod(Duration.seconds(60))
                 .build();
     }
 }
