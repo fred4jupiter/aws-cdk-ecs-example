@@ -7,8 +7,19 @@ import software.amazon.awscdk.core.App;
 public class AwsCdkExampleApp {
 
     public static void main(final String[] args) {
+//        createEcsWithFargateApplication();
+
+        createEcsWithEc2Application();
+    }
+
+    private static void createEcsWithEc2Application() {
         App app = new App();
-//        new Ec2Stack(app, "Ec2Stack");
+        new Ec2Stack(app, "Ec2Stack");
+        app.synth();
+    }
+
+    private static void createEcsWithFargateApplication() {
+        App app = new App();
         new FargateStack(app, "FargateStack");
         app.synth();
     }
