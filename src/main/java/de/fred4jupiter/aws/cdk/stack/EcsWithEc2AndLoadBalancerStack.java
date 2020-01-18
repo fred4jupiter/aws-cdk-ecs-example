@@ -35,7 +35,7 @@ public class EcsWithEc2AndLoadBalancerStack extends Stack {
         SubnetConfiguration privateSubnet = SubnetConfiguration.builder().name("private-sn").subnetType(SubnetType.PRIVATE).cidrMask(24).build();
         SubnetConfiguration isolatedSubnet = SubnetConfiguration.builder().name("isolated-sn").subnetType(SubnetType.ISOLATED).cidrMask(24).build();
 
-        final Vpc vpc = Vpc.Builder.create(this, "MyVpc").maxAzs(1).subnetConfiguration(Arrays.asList(publicSubnet, privateSubnet, isolatedSubnet)).build();
+        final Vpc vpc = Vpc.Builder.create(this, "MyVpc").maxAzs(1).subnetConfiguration(Arrays.asList(publicSubnet, isolatedSubnet)).natGateways(0).build();
 
         Cluster cluster = createCluster(vpc);
 
@@ -55,7 +55,8 @@ public class EcsWithEc2AndLoadBalancerStack extends Stack {
                 .masterUserPassword(secret.getSecretValue())
                 .multiAz(false)
                 .instanceClass(InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO))
-                .vpcPlacement(SubnetSelection.builder().subnetType(SubnetType.PRIVATE).build())
+                .vpcPlacement(SubnetSelection.builder().subnetType(SubnetType.ISOLATED).build())
+                .availabilityZone("eu-central-1a")
                 .build();
 
         Map<String, String> envVariables = new HashMap<>();
