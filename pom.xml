@@ -67,6 +67,12 @@
             <version>${aws.cdk.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+            <version>${aws.cdk.version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
