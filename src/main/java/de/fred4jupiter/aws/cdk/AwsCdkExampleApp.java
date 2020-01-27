@@ -8,6 +8,8 @@ public class AwsCdkExampleApp {
     public static void main(final String[] args) {
         App app = new App();
         new EcsWithEc2AndLoadBalancerStack(app, "ecsWithEc2AndLoadBalancerStack");
+//        new DatabaseOnlyStack(app, "databaseOnlyStack");
+//        new SecretStack(app, "secretStack");
         app.synth();
     }
 }

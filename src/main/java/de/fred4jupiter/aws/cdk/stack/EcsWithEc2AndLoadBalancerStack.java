@@ -1,6 +1,8 @@
 package de.fred4jupiter.aws.cdk.stack;
 
-import de.fred4jupiter.aws.cdk.constructs.*;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreator;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreatorProps;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreatorPropsBuilder;
 import de.fred4jupiter.aws.cdk.constructs.ecs.ec2.EcsEc2Creator;
 import de.fred4jupiter.aws.cdk.constructs.ecs.ec2.EcsEc2CreatorProps;
 import software.amazon.awscdk.core.Construct;
@@ -28,12 +30,9 @@ public class EcsWithEc2AndLoadBalancerStack extends Stack {
 
         final Vpc vpc = createVpc(id);
 
-        DatabaseCreatorProps databaseCreatorProps = DatabaseCreatorProps.builder()
-                .databaseName(DB_NAME)
-                .username(DB_USERNAME)
-                .vpc(vpc)
-                .subnetType(SubnetType.ISOLATED)
-                .build();
+        DatabaseCreatorProps databaseCreatorProps = DatabaseCreatorPropsBuilder.create().withDatabaseName(DB_NAME)
+                .withUsername(DB_USERNAME).withVpc(vpc).withSubnetType(SubnetType.ISOLATED).build();
+
         DatabaseCreator databaseCreator = new DatabaseCreator(this, "MyRdsDatabase", databaseCreatorProps);
 
         Map<String, String> envVariables = new HashMap<>();

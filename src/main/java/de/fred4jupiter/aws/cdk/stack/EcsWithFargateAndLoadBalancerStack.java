@@ -2,6 +2,7 @@ package de.fred4jupiter.aws.cdk.stack;
 
 import de.fred4jupiter.aws.cdk.constructs.DatabaseCreator;
 import de.fred4jupiter.aws.cdk.constructs.DatabaseCreatorProps;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreatorPropsBuilder;
 import de.fred4jupiter.aws.cdk.constructs.ecs.fargate.EcsFargateCreator;
 import de.fred4jupiter.aws.cdk.constructs.ecs.fargate.EcsFargateCreatorProps;
 import software.amazon.awscdk.core.Construct;
@@ -29,12 +30,9 @@ public class EcsWithFargateAndLoadBalancerStack extends Stack {
 
         final Vpc vpc = createVpc(id);
 
-        DatabaseCreatorProps databaseCreatorProps = DatabaseCreatorProps.builder()
-                .databaseName(DB_NAME)
-                .username(DB_USERNAME)
-                .vpc(vpc)
-                .subnetType(SubnetType.PRIVATE)
-                .build();
+        DatabaseCreatorProps databaseCreatorProps = DatabaseCreatorPropsBuilder.create().withDatabaseName(DB_NAME)
+                .withUsername(DB_USERNAME).withVpc(vpc).withSubnetType(SubnetType.PRIVATE).build();
+
         DatabaseCreator databaseCreator = new DatabaseCreator(this, "MyRdsDatabase", databaseCreatorProps);
 
         Map<String, String> envVariables = new HashMap<>();
@@ -51,6 +49,6 @@ public class EcsWithFargateAndLoadBalancerStack extends Stack {
     private Vpc createVpc(String id) {
         SubnetConfiguration publicSubnet = SubnetConfiguration.builder().name("public-sn").subnetType(SubnetType.PUBLIC).cidrMask(24).build();
         SubnetConfiguration privateSubnet = SubnetConfiguration.builder().name("private-sn").subnetType(SubnetType.PRIVATE).cidrMask(24).build();
-        return Vpc.Builder.create(this, id).maxAzs(2).subnetConfiguration(Arrays.asList(publicSubnet, privateSubnet)).natGateways(1).build();
+        return Vpc.Builder.create(this, id).maxAzs(2).subnetConfiguration(Arrays.asList(publicSubnet, privateSubnet)).build();
     }
 }

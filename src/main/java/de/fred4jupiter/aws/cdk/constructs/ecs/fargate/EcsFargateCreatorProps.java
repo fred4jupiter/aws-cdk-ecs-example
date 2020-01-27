@@ -16,8 +16,7 @@ public interface EcsFargateCreatorProps {
 
     Vpc getVpc();
 
-    // The builder for the props interface
-    public static class Builder {
+    class Builder {
         private Vpc vpc;
         private String imageName;
         private Map<String, String> envVariables;

@@ -1,89 +1,54 @@
 package de.fred4jupiter.aws.cdk.constructs;
 
+import software.amazon.awscdk.services.ec2.SecurityGroup;
 import software.amazon.awscdk.services.ec2.SubnetType;
 import software.amazon.awscdk.services.ec2.Vpc;
 
-public interface DatabaseCreatorProps {
+public class DatabaseCreatorProps {
 
-    public static Builder builder() {
-        return new Builder();
+    private Vpc vpc;
+    private String username;
+    private String databaseName;
+    private SubnetType subnetType;
+    private SecurityGroup allowedInboundSecurityGroup;
+
+    public Vpc getVpc() {
+        return vpc;
     }
 
-    String getUsername();
+    public void setVpc(Vpc vpc) {
+        this.vpc = vpc;
+    }
 
-    Vpc getVpc();
+    public String getUsername() {
+        return username;
+    }
 
-    String getDatabaseName();
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    SubnetType getSubnetType();
+    public String getDatabaseName() {
+        return databaseName;
+    }
 
-    // The builder for the props interface
-    public static class Builder {
-        private Vpc vpc;
-        private String username;
-        private String databaseName;
-        private SubnetType subnetType;
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
 
-        public Builder vpc(Vpc vpc) {
-            this.vpc = vpc;
-            return this;
-        }
+    public SubnetType getSubnetType() {
+        return subnetType;
+    }
 
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
+    public void setSubnetType(SubnetType subnetType) {
+        this.subnetType = subnetType;
+    }
 
-        public Builder databaseName(String databaseName) {
-            this.databaseName = databaseName;
-            return this;
-        }
+    public SecurityGroup getAllowedInboundSecurityGroup() {
+        return allowedInboundSecurityGroup;
+    }
 
-        public Builder subnetType(SubnetType subnetType) {
-            this.subnetType = subnetType;
-            return this;
-        }
-
-
-        public DatabaseCreatorProps build() {
-            if (this.vpc == null) {
-                throw new NullPointerException("The vpc property is required!");
-            }
-
-            if (this.username == null) {
-                throw new NullPointerException("The username property is required!");
-            }
-
-            if (this.databaseName == null) {
-                throw new NullPointerException("The databaseName property is required!");
-            }
-
-            if (this.subnetType == null) {
-                throw new NullPointerException("The subnetType property is required!");
-            }
-
-            return new DatabaseCreatorProps() {
-
-                @Override
-                public String getUsername() {
-                    return username;
-                }
-
-                @Override
-                public Vpc getVpc() {
-                    return vpc;
-                }
-
-                @Override
-                public String getDatabaseName() {
-                    return databaseName;
-                }
-
-                @Override
-                public SubnetType getSubnetType() {
-                    return subnetType;
-                }
-            };
-        }
+    public void setAllowedInboundSecurityGroup(SecurityGroup allowedInboundSecurityGroup) {
+        this.allowedInboundSecurityGroup = allowedInboundSecurityGroup;
     }
 }
