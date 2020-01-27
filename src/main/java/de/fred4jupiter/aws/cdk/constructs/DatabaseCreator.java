@@ -40,7 +40,6 @@ public class DatabaseCreator extends Construct {
                 .multiAz(false)
                 .instanceClass(InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO))
                 .vpcPlacement(SubnetSelection.builder().subnetType(props.getSubnetType()).build())
-                .availabilityZone("eu-central-1a")
                 .deletionProtection(false)
 //                .securityGroups(Collections.singletonList(securityGroup))
                 .build();
