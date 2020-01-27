@@ -1,9 +1,7 @@
-package de.fred4jupiter.aws.cdk.stack;
+package de.fred4jupiter.aws.cdk.constructs.ecs.ec2;
 
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
-import software.amazon.awscdk.core.Stack;
-import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.InstanceClass;
 import software.amazon.awscdk.services.ec2.InstanceSize;
 import software.amazon.awscdk.services.ec2.InstanceType;
@@ -14,39 +12,22 @@ import software.amazon.awscdk.services.ecs.ContainerImage;
 import software.amazon.awscdk.services.ecs.RepositoryImage;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedEc2Service;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
-import software.amazon.awscdk.services.rds.DatabaseInstance;
-import software.amazon.awscdk.services.secretsmanager.Secret;
 
-import java.util.HashMap;
-import java.util.Map;
+public class EcsEc2Creator extends Construct {
 
-public class Ec2Stack extends Stack {
-
-    public Ec2Stack(final Construct scope, final String id) {
-        this(scope, id, null);
-    }
-
-    public Ec2Stack(final Construct scope, final String id, final StackProps props) {
-        super(scope, id, props);
-    }
-
-    public void createResources(Vpc vpc, String dbName, DatabaseInstance databaseInstance, String dbUsername, Secret secret) {
-        Cluster cluster = createCluster(vpc);
+    public EcsEc2Creator(Construct scope, String id, EcsEc2CreatorProps props) {
+        super(scope, id);
 
         // Create a load-balanced Fargate service and make it public
-        RepositoryImage repositoryImage = ContainerImage.fromRegistry("fred4jupiter/fredbet:latest");
-
-        Map<String, String> envVariables = new HashMap<>();
-        envVariables.put("SPRING_PROFILES_ACTIVE", "mysql");
-        envVariables.put("SPRING_DATASOURCE_HIKARI_JDBC_URL", "jdbc:mysqldb://" + databaseInstance.getDbInstanceEndpointAddress() + ":" + databaseInstance.getDbInstanceEndpointPort() + "/" + dbName);
-        envVariables.put("SPRING_DATASOURCE_HIKARI_USERNAME", dbUsername);
-        envVariables.put("SPRING_DATASOURCE_HIKARI_PASSWORD", secret.getSecretArn());
+        RepositoryImage repositoryImage = ContainerImage.fromRegistry(props.getImageName());
 
         ApplicationLoadBalancedTaskImageOptions taskImageOptions = ApplicationLoadBalancedTaskImageOptions.builder()
                 .image(repositoryImage)
                 .containerPort(8080)
-                .environment(envVariables)
+                .environment(props.getEnvVariables())
                 .build();
+
+        Cluster cluster = createCluster(props.getVpc());
 
         ApplicationLoadBalancedEc2Service.Builder.create(this, "MyEcsService")
                 .cluster(cluster)           // Required

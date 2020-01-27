@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.fred4jupiter.aws.cdk.stack.EcsWithEc2AndLoadBalancerStack;
-import de.fred4jupiter.aws.cdk.stack.FargateStack;
-import de.fred4jupiter.aws.cdk.stack.RdsStack;
-import de.fred4jupiter.aws.cdk.stack.VpcStack;
+import de.fred4jupiter.aws.cdk.stack.EcsWithFargateAndLoadBalancerStack;
 import org.junit.Test;
 import software.amazon.awscdk.core.App;
 
@@ -26,30 +24,11 @@ public class AwsCdkExampleAppTest {
     }
 
     @Test
-    public void createVpcStack() {
+    public void ecsWithFargateAndLoadBalancerStack() {
         App app = new App();
-        VpcStack stack = new VpcStack(app, "vpcStack");
+        EcsWithFargateAndLoadBalancerStack stack = new EcsWithFargateAndLoadBalancerStack(app, "ecsWithFargateAndLoadBalancerStack");
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
         System.out.println(actual);
         assertNotNull(actual);
     }
-
-    @Test
-    public void createRdsStack() {
-        App app = new App();
-        RdsStack stack = new RdsStack(app, "rdsStack");
-        JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        System.out.println(actual);
-        assertNotNull(actual);
-    }
-
-    @Test
-    public void createFargateStack() {
-        App app = new App();
-        FargateStack stack = new FargateStack(app, "fargateStack");
-        JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
-        System.out.println(actual);
-        assertNotNull(actual);
-    }
-
 }

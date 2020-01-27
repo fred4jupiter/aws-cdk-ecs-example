@@ -1,8 +1,9 @@
 package de.fred4jupiter.aws.cdk.stack;
 
-import de.fred4jupiter.aws.cdk.constructs.*;
-import de.fred4jupiter.aws.cdk.constructs.ecs.ec2.EcsEc2Creator;
-import de.fred4jupiter.aws.cdk.constructs.ecs.ec2.EcsEc2CreatorProps;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreator;
+import de.fred4jupiter.aws.cdk.constructs.DatabaseCreatorProps;
+import de.fred4jupiter.aws.cdk.constructs.ecs.fargate.EcsFargateCreator;
+import de.fred4jupiter.aws.cdk.constructs.ecs.fargate.EcsFargateCreatorProps;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
@@ -14,16 +15,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EcsWithEc2AndLoadBalancerStack extends Stack {
+public class EcsWithFargateAndLoadBalancerStack extends Stack {
 
     private static final String DB_NAME = "fredbetdb";
     private static final String DB_USERNAME = "fredbet";
 
-    public EcsWithEc2AndLoadBalancerStack(Construct scope, String id) {
+    public EcsWithFargateAndLoadBalancerStack(Construct scope, String id) {
         this(scope, id, null);
     }
 
-    public EcsWithEc2AndLoadBalancerStack(Construct scope, String id, StackProps props) {
+    public EcsWithFargateAndLoadBalancerStack(Construct scope, String id, StackProps props) {
         super(scope, id, props);
 
         final Vpc vpc = createVpc(id);
@@ -32,7 +33,7 @@ public class EcsWithEc2AndLoadBalancerStack extends Stack {
                 .databaseName(DB_NAME)
                 .username(DB_USERNAME)
                 .vpc(vpc)
-                .subnetType(SubnetType.ISOLATED)
+                .subnetType(SubnetType.PRIVATE)
                 .build();
         DatabaseCreator databaseCreator = new DatabaseCreator(this, "MyRdsDatabase", databaseCreatorProps);
 
@@ -42,15 +43,14 @@ public class EcsWithEc2AndLoadBalancerStack extends Stack {
         envVariables.put("SPRING_DATASOURCE_HIKARI_USERNAME", DB_NAME);
         envVariables.put("SPRING_DATASOURCE_HIKARI_PASSWORD", databaseCreator.getSecret().getSecretArn());
 
-        EcsEc2CreatorProps ecsEc2CreatorProps = EcsEc2CreatorProps.builder()
+        EcsFargateCreatorProps ecsFargateCreatorProps = EcsFargateCreatorProps.builder()
                 .imageName("fred4jupiter/fredbet:latest").envVariables(envVariables).vpc(vpc).build();
-        new EcsEc2Creator(this, "MyEcsCluster", ecsEc2CreatorProps);
+        new EcsFargateCreator(this, "MyEcsCluster", ecsFargateCreatorProps);
     }
 
     private Vpc createVpc(String id) {
         SubnetConfiguration publicSubnet = SubnetConfiguration.builder().name("public-sn").subnetType(SubnetType.PUBLIC).cidrMask(24).build();
-        SubnetConfiguration isolatedSubnet = SubnetConfiguration.builder().name("isolated-sn").subnetType(SubnetType.ISOLATED).cidrMask(24).build();
-        return Vpc.Builder.create(this, id).maxAzs(2).subnetConfiguration(Arrays.asList(publicSubnet, isolatedSubnet)).natGateways(0).build();
+        SubnetConfiguration privateSubnet = SubnetConfiguration.builder().name("private-sn").subnetType(SubnetType.PRIVATE).cidrMask(24).build();
+        return Vpc.Builder.create(this, id).maxAzs(2).subnetConfiguration(Arrays.asList(publicSubnet, privateSubnet)).natGateways(1).build();
     }
-
 }
