@@ -41,6 +41,7 @@ public class DatabaseCreator extends Construct {
                 .instanceClass(InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO))
                 .vpcPlacement(SubnetSelection.builder().subnetType(props.getSubnetType()).build())
                 .availabilityZone("eu-central-1a")
+                .deletionProtection(false)
 //                .securityGroups(Collections.singletonList(securityGroup))
                 .build();
         this.dbInstanceEndpointAddress = databaseInstance.getDbInstanceEndpointAddress();
